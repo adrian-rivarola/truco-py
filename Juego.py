@@ -169,7 +169,7 @@ class Juego:
 
 		self.ronda += 1
 		self.cartasJugadas = [None, None]
-		if self.ganadorMano:
+		if self.ganadorMano != None:
 			self.puntos[self.ganadorMano] += self.truco
 
 		time.sleep(3)
@@ -204,6 +204,6 @@ class Juego:
 
 		if self.ronda == 1: return
 		
-		else:
-			if self.ganadores.count(self.turno) > 1 or self.ganadores.count('Empate') > 1:
+		elif self.ganadores.count(self.turno) > 1 or self.ganadores.count('Empate') > 0:
 				self.ganadorMano = self.turno
+

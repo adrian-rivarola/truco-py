@@ -7,7 +7,7 @@ juego = Juego()
 while max(juego.puntos) < 9:
 
 	juego.repartir()
-	while not juego.ganadorMano:
+	while juego.ganadorMano is None:
 		juego.jugarRonda()
 	
 	juego.info()

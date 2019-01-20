@@ -88,7 +88,7 @@ class Humano(Jugador):
 		"""
 		if env == 2: env = 1
 		print('---------------')
-		print('Tanto {}'.format(self.tanto))
+		print('Tanto: {}'.format(self.tanto))
 		print('1. No quiero\n2. Quiero')
 		
 		for i in range(env+1,5):
