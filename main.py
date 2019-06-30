@@ -1,14 +1,4 @@
-from Juego import Juego
-import time
+from Juego import juego
 
-juego = Juego()
-
-#Jugar hasta 9 puntos
-while max(juego.puntos) < 9:
-
-	juego.repartir()
-	while juego.ganadorMano is None:
-		juego.jugarRonda()
-	
-	juego.info()
-	time.sleep(3)
+if __name__ == '__main__':
+	juego.jugar()

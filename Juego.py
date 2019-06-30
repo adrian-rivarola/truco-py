@@ -11,19 +11,16 @@ class Juego:
 	Por defecto, crea un jugador Humano y uno controlado por la CPU.
 	"""
 	def __init__(self):
-		
 		self.jugadores = [Humano(0), Cpu(1)]
 		self.puntos = [0,0]
 		self.mano = random.choice([0,1])
 
 	def info(self):
-		"""
-		Imprime el resultado parcial del juego.
-		"""
-		os.system('clear')
+		""" Imprime el resultado parcial del juego. """
+		os.system('cls' if os.name=="nt" else "clear")
 		print('-----------------')
-		for i in range(2):
-			print('{}: {} puntos'.format(diccJugadores[i], self.puntos[i]))
+		for i in range(2): 
+			print(f'{ diccJugadores[i] }: { self.puntos[i] } puntos')
 		print('-----------------')
 
 	def repartir(self):
@@ -31,6 +28,13 @@ class Juego:
 		Es ejecutado al comienzo de cada mano, crea una mazo de cartas, lo mezcla y reparte 3 cartas a cada jugador.
 		Tambien resetea todas las variables utilizadas durante el desarrollo de la mano.
 		"""
+		self.ganadores, self.cartasJugadas, self.ganadorMano = [None, None, None], [None,None], None
+		self.ronda = self.truco = 1
+		self.palabraTruco = [0,1]
+		self.mano = 1 - self.mano
+		self.turno = self.mano
+		self.envido = 0
+
 		for jug in self.jugadores:
 			jug.cartas = []
 
@@ -40,17 +44,6 @@ class Juego:
 		for i in range(3):
 			for jugador in self.jugadores:
 				jugador.addCarta(mazo.pop())
-		
-		self.ronda = 1
-		self.mano = 1 - self.mano
-		self.turno = self.mano
-		self.truco = 1
-		self.envido = 0
-		self.palabraTruco = [0,1]
-		self.ganadores = [None, None, None]
-		self.cartasJugadas = [None,None]
-		self.ganadorMano = None
-		
 	
 	def pedirTruco(self, ident):
 		"""
@@ -58,18 +51,18 @@ class Juego:
 		En caso de que la respuesta sea 3, esta funcion se llama a si misma, cambiando el identificador.
 		"""
 		print('-----------------')
-		print('{}: {}'.format(diccJugadores[ident], diccTruco[self.truco]))
+		print(f'{ diccJugadores[ident] }: { diccTruco[self.truco] }')
 		
 		respuesta = self.jugadores[1-ident].responderTruco(self)
 		
 		if respuesta == 2:
 			self.ganadorMano = ident
-			print('{}: No quiero'.format(diccJugadores[1-ident]))
+			print(f'{ diccJugadores[1-ident] }: No quiero')
 		
 		elif respuesta == 1:
 			self.truco += 1
 			self.palabraTruco = [1-ident] if self.truco < 3 else []
-			print('{}: Quiero'.format(diccJugadores[1-ident]))
+			print(f'{ diccJugadores[1-ident] }: Quiero')
 		
 		elif respuesta == 3 and self.truco < 3:
 			self.truco += 1
@@ -82,11 +75,11 @@ class Juego:
 		La respuesta puede ser: 0 para rechazar, 1 para aceptar, 2-4 para cantar otro Envido.
 		"""
 		print('-----------------')
-		print('{}: {}'.format(diccJugadores[ident], diccEnvido[env]))
+		print(f'{ diccJugadores[ident] }: { diccEnvido[env] }')
 
 		respuesta = self.jugadores[1-ident].responderEnvido(env)
 		
-		print('{}: {}'.format(diccJugadores[1-ident], diccEnvido[respuesta]))
+		if respuesta < 2: print(f'{diccJugadores[1-ident] }: { diccEnvido[respuesta] }')
 		print('-----------------')
 		
 		if respuesta == 0:
@@ -124,52 +117,50 @@ class Juego:
 		Funciones de Contra Flor y Contra Flor al resto aun no han sido implementadas.
 		"""
 		print('-----------------')
-		print('{}: Flor'.format(diccJugadores[ident]))
+		print(f'{ diccJugadores[ident] }: Flor')
 		
 		if self.jugadores[1-ident].flor:
 			self.envido = 3
 			self.ganadorEnvido()
 		else:
 			self.puntos[ident] += 3
+			self.envido = 3
 
 	def ganadorEnvido(self):
-		"""
-		Determina cual jugador posee el tanto mas alto, y le asigna los puntos correspondientes.
-		"""
+		""" Determina cual jugador posee el tanto mas alto, y le asigna los puntos correspondientes. """
 		print('-----------------')
-		print('{}: {}'.format(diccJugadores[self.mano], self.jugadores[self.mano].tanto))
+		print(f'{ diccJugadores[self.mano] }: { self.jugadores[self.mano].tanto }')
 		
 		if self.jugadores[1-self.mano] > self.jugadores[self.mano]:
-			print('{}: {} son mejores'.format(diccJugadores[1-self.mano], self.jugadores[1-self.mano].tanto))
+			print(f'{ diccJugadores[1-self.mano] }: { self.jugadores[1-self.mano].tanto } son mejores')
 			ganadorE = 1-self.mano
 		else:
-			print('{}: Son buenas'.format(diccJugadores[1-self.mano]))
+			print(f'{ diccJugadores[1-self.mano] }: Son buenas')
 			ganadorE = self.mano
-		print('-----------------')
 
+		print('-----------------')
 		self.puntos[ganadorE] += self.envido
 		time.sleep(2)
 
 	def jugarRonda(self):
-		"""
-		Llama a la funcion jugar() de cada jugador, comprueba que se hayan jugado cartas o si hay una ganador.
-		"""
-		os.system('clear')
+		""" Llama a la funcion jugar() de cada jugador, comprueba que se hayan jugado una carta o si hay una ganador. """
+		os.system('cls' if os.name=="nt" else "clear")
 		print('------------------')
-		print('-    Ronda {}     -'.format(self.ronda))
+		print(f'-    Ronda {self.ronda}     -')
 		print('------------------')
 		
 		self.jugadores[self.turno].jugar(self)
 		
-		if self.cartasJugadas[0] or self.cartasJugadas[1]:
+		if self.ganadorMano not in [0,1]:
 			self.jugadores[1-self.turno].jugar(self)
 
-		if self.cartasJugadas[1] and self.cartasJugadas[0] and not self.ganadorMano:
+		if self.cartasJugadas[1] and self.cartasJugadas[0] and self.ganadorMano not in [0,1]:
 			self.ganadorRonda()
 
 		self.ronda += 1
 		self.cartasJugadas = [None, None]
-		if self.ganadorMano != None:
+		
+		if self.ganadorMano in [0,1]:
 			self.puntos[self.ganadorMano] += self.truco
 
 		time.sleep(3)
@@ -178,8 +169,8 @@ class Juego:
 		"""
 		El jugador que haya jugado la carta mas fuerte es el ganador de la ronda.
 		Un jugador debe ganar dos Rondas para ganar la Mano.
-		En caso de que haiga 1 o 2 empates, el ganador de la siguiente ronda gana la Mano.
-		En caso de que haigan 3 empates el jugador que haya tirado la primera carta gana la Mano.
+		En caso de que haya 1 o 2 empates, el ganador de la siguiente ronda gana la Mano.
+		En caso de que hayan 3 empates el jugador que haya tirado la primera carta gana la Mano.
 		"""
 		if self.cartasJugadas[0] > self.cartasJugadas[1]:
 			self.turno = 0
@@ -207,3 +198,25 @@ class Juego:
 		elif self.ganadores.count(self.turno) > 1 or self.ganadores.count('Empate') > 0:
 				self.ganadorMano = self.turno
 
+	def jugar(self):
+		os.system('cls' if os.name=="nt" else "clear")
+		print("Jugar hasta:\n1- 18 puntos \n2- 9 puntos")
+		while 1:
+			inp = input("> ")
+			if inp == "1":
+				max_puntos = 18
+				break
+			elif inp == "2":
+				max_puntos = 9
+				break
+
+		while max(self.puntos) < max_puntos:
+			self.repartir()
+			
+			while self.ganadorMano not in [0,1]:
+				self.jugarRonda()
+
+			self.info()
+			time.sleep(3)
+
+juego = Juego()
