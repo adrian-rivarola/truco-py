@@ -16,6 +16,6 @@ diccTruco = {
 }
 
 diccJugadores = {
-	0 : 'Jugador',
-	1 : 'Cpu'
+	0 : '* J1',
+	1 : '* CPU'
 }

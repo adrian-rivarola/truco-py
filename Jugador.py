@@ -43,51 +43,59 @@ class Jugador:
 class Humano(Jugador):
 
 	def responderTruco(self, juego):
-		print('---------------')
+		print("------------------")
 		print(' 1. Quiero\n 2. No quiero')
 		try:
 			print(f' 3. { diccTruco[juego.truco+1] }')
-		except: pass
+			print("------------------")
+			max_truco = 3
+		except IndexError: max_truco = 2
 		
 		while 1:
 			try: inp = int(input('> '))
 			except ValueError: continue
-			if inp in range(1,4): break
+			print("------------------")
+			if inp in range(1,max_truco+1): break
 
-		return inp if inp in range(1,4) else 2
+		return inp
 
 	def responderEnvido(self, env):
 		""" Retorna 0 para aceptar, 1 para rechazar, o bien una opcion de Envido(segun el diccionario) """
 		if env == 2: env = 1
-		print('---------------')
-		print(f'Tanto: { self.tanto }')
-		print('1. No quiero\n2. Quiero')
+		print('------------------')
+		print(f' Tu tanto es : { self.tanto }')
+		print('------------------')
+		print(' 1. No quiero\n 2. Quiero')
 		
 		for i in range(env+1,5):
-			print(f'{ i+1 }. { diccEnvido[i] }')
+			print(f' { i+1 }. { diccEnvido[i] }')
 		
 		if self.flor:
-			print('6. Flor')
-
+			print(' 6. Flor')
+		
+		print('------------------')
+		
 		while 1:
 			try: inp = int(input('> '))
 			except ValueError: continue
 			if inp in range(1,6): break
-		
+		print("------------------")
 		return inp-1
 		#Retorna el numero ingresado por el usuario menos uno, ya que en pantalla las opciones se enumeran del 1 al 5-6.
 
 	def pedirEnvido(self, juego):
 		"""Retorna el numero de envido a pedir(segun el diccionario)."""
-		print('---------------')
+		#print('------------------')
 		for i in range(2,5):
-			print(f'{ i-1 }. { diccEnvido[i] }')
-		
+			print(f' { i-1 }. { diccEnvido[i] }')
+		print("------------------")
+
 		while 1:
 			try: inp = int(input('> '))
 			except ValueError: continue
 			if inp in range(1,5): break
-
+		
+		print("------------------")
 		juego.pedirEnvido(self.ident, inp+1) 
 		#El dicc Envido empieza en 2, por lo que se añade 1 al input del usuario.
 
@@ -97,11 +105,17 @@ class Humano(Jugador):
 		El usuario ingresa el numero de la opcion a jugar, y el metodo de esta opcion es ejecutado
 		"""
 		self.opciones = dict()
-		print('-----------------\nCartas:')
+
+		print('------------------')
+		print('-  Tus cartas:   -')
+		print('------------------')
+		
 		i = 1
 		for carta in self.cartas:
 			print(f' { i }. { carta }')
 			i += 1
+
+		print('------------------')
 
 		if self.ident in juego.palabraTruco:
 			print(f' { i }. { diccTruco[juego.truco] }')
@@ -109,41 +123,47 @@ class Humano(Jugador):
 			i += 1
 
 		if juego.ronda == 1:
+			
 			if self.flor:
 				print(f' { i }. Flor')
 				self.opciones[i] = 'Flor'
 				i += 1
+			
 			elif juego.envido == 0:
 				print(f' { i }. Envido')
 				self.opciones[i] = 'Envido'
 				i += 1
 
-		print(f' { i }. Mazo \n-----------------')
+		print(f' { i }. Mazo')
 		self.opciones[i] = 'Mazo'
-
+		print("------------------")
+		
 		while 1:
-			try: inp = int(input('> '))
+			try: 
+				inp = int(input('> '))
+				if inp in range(1, len(self.cartas)+1): break
+
 			except ValueError: continue
-
-			if inp > len(self.cartas):
-				if inp > i+1: continue
-
-				if self.opciones[inp] == 'Truco': juego.pedirTruco(self.ident)
-
-				elif self.opciones[inp] == 'Envido': self.pedirEnvido(juego)
-				
-				elif self.opciones[inp] == 'Flor': juego.pedirFlor(self.ident)
-				
-				elif self.opciones[inp] == 'Mazo':
-					print('Jugador: Me voy al Mazo')
-					juego.ganadorMano = 1-self.ident
-				
-				if juego.ganadorMano in [0,1]: return
 			
-			else: break
+			if inp < 0 or inp > i: continue
+			
+			print("------------------")
+			
+			if self.opciones[inp] == 'Truco': juego.pedirTruco(self.ident)
 
-		print(f'Jugador: { self.cartas[inp-1] }')
+			elif self.opciones[inp] == 'Envido': self.pedirEnvido(juego)
+			
+			elif self.opciones[inp] == 'Flor': juego.pedirFlor(self.ident)
+			
+			elif self.opciones[inp] == 'Mazo':
+				print(' * J1: Me voy al Mazo.')
+				juego.ganadorMano = 1-self.ident
+			
+			if juego.ganadorMano in [0,1]: return
+		
 		juego.cartasJugadas[self.ident] = self.cartas.pop(inp-1)
+		print("------------------")
+		print(f' * J1: { juego.cartasJugadas[self.ident] }')
 
 class Cpu(Jugador):
 	
@@ -173,6 +193,8 @@ class Cpu(Jugador):
 
 	def responderEnvido(self, env):
 		""" Retorna: 1, para aceptar, 0 para rechazar, o bien una opcion de Envido(segun el diccionario) """
+		
+		if self.flor: return 5
 		if env < 3:
 			if self.tanto < 24: return 0
 			elif self.tanto < 28: return 1
@@ -219,4 +241,4 @@ class Cpu(Jugador):
 			juego.cartasJugadas[self.ident] = self.cartas.pop(0)
 
 		if not juego.ganadorMano: 
-			print(f'Cpu: {juego.cartasJugadas[self.ident]}')
+			print(f' * CPU: {juego.cartasJugadas[self.ident]}')
