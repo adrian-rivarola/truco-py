@@ -1,3 +1,3 @@
 #truco-py
 
-![screenshots](https://imgur.com/a/s7HLaC4)
+![screenshots](https://i.imgur.com/1KXL8Yu.png)
