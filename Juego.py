@@ -7,7 +7,7 @@ import os
 
 class Juego:
 	"""
-	Esta clase se encarga de controlar toda la logica y las funciones del Juego.
+	Esta clase se encarga de controlar toda la lógica y las funciones del Juego.
 	Por defecto, crea un jugador Humano y uno controlado por la CPU.
 	"""
 	def __init__(self):
@@ -28,7 +28,7 @@ class Juego:
 	def repartir(self):
 		"""
 		Es ejecutado al comienzo de cada mano, crea una mazo de cartas, lo mezcla y reparte 3 cartas a cada jugador.
-		Tambien resetea todas las variables utilizadas durante el desarrollo de la mano.
+		También resetea todas las variables utilizadas durante el desarrollo de la mano.
 		"""
 		self.ganadores, self.cartasJugadas, self.ganadorMano = [None, None, None], [None,None], None
 		self.ronda = self.truco = 1
@@ -49,29 +49,23 @@ class Juego:
 	
 	def pedirTruco(self, ident):
 		"""
-		Recibe por parametro el identificador del jugador que pide Truco, y pide una respuesta(1,2 o 3) al otro jugador.
-		En caso de que la respuesta sea 3, esta funcion se llama a si misma, cambiando el identificador.
+		Recibe por parámetro el identificador del jugador que pide Truco, y pide una respuesta(1,2 o 3) al otro jugador.
+		En caso de que la respuesta sea 3, esta función se llama a sí misma, cambiando el identificador.
 		"""
-		# print("******************")
 		print(f' { diccJugadores[ident] }: { diccTruco[self.truco] }')
-		# print("******************")
 
 		respuesta = self.jugadores[1-ident].responderTruco(self)
 		
 		if respuesta == 2:
 			self.ganadorMano = ident
-			# print("******************")
 			print(f' { diccJugadores[1-ident] }: No quiero')
 			print("------------------")
-			# print("******************")
 		
 		elif respuesta == 1:
 			self.truco += 1
 			self.palabraTruco = [1-ident] if self.truco < 3 else []
-			# print("******************")
 			print(f' { diccJugadores[1-ident] }: Quiero')
 			print("------------------")
-			# print("******************")
 		
 		elif respuesta == 3 and self.truco < 3:
 			self.truco += 1
@@ -80,20 +74,16 @@ class Juego:
 
 	def pedirEnvido(self, ident, env):
 		"""
-		Recibe el identificador del jugador que pide el Envido, y el numero de envido segun el diccionario(0-4).
+		Recibe el identificador del jugador que pide el Envido, y el número de envido según el diccionario(0-4).
 		La respuesta puede ser: 0 para rechazar, 1 para aceptar, 2-4 para cantar otro Envido.
 		"""
-		# print("******************")
 		print(f' { diccJugadores[ident] }: { diccEnvido[env] }')
-		# print("******************")
 
 		respuesta = self.jugadores[1-ident].responderEnvido(env)
 		
 		if respuesta < 2: 
-			# print("******************")
 			print(f' {diccJugadores[1-ident] }: { diccEnvido[respuesta] }')
 			print('-----------------')
-			# print("******************")
 
 		
 		if respuesta == 0:
@@ -114,8 +104,8 @@ class Juego:
 
 	def envidoAceptado(self,env):
 		"""
-		Calcula cuantos puntos se deben asignar al ganador del Envido.
-		Puede ser: envido(2), real envido(3), falta envido, o una combinacion de estos.
+		Calcula cuántos puntos se deben asignar al ganador del Envido.
+		Puede ser: envido(2), real envido(3), falta envido, o una combinación de estos.
 		"""
 		if env < 4:
 				self.envido += env
@@ -128,12 +118,10 @@ class Juego:
 	def pedirFlor(self, ident):
 		"""
 		Recibe el identificador del jugador con Flor. 
-		Si el oponente tambien cuenta con flor, el que tenga mayor tanto se lleva 3 puntos.
-		Funciones de Contra Flor y Contra Flor al resto aun no han sido implementadas.
+		Si el oponente también cuenta con flor, el que tenga mayor tanto se lleva 3 puntos.
+		Funciones de Contra Flor y Contra Flor al resto aún no han sido implementadas.
 		"""
-		# print("******************")
 		print(f' { diccJugadores[ident] }: Flor')
-		# print("******************")
 		
 		if self.jugadores[1-ident].flor:
 			self.envido = 3
@@ -143,20 +131,14 @@ class Juego:
 			self.envido = 3
 
 	def ganadorEnvido(self):
-		""" Determina cual jugador posee el tanto mas alto, y le asigna los puntos correspondientes. """
-		# print("******************")
+		""" Determina cual jugador posee el tanto más alto, y le asigna los puntos correspondientes. """
 		print(f' { diccJugadores[self.mano] }: { self.jugadores[self.mano].tanto }')
-		# print("******************")
 		
 		if self.jugadores[1-self.mano] > self.jugadores[self.mano]:
-			# print("******************")
 			print(f' { diccJugadores[1-self.mano] }: { self.jugadores[1-self.mano].tanto } son mejores')
-			# print("******************")
 			ganadorE = 1-self.mano
 		else:
-			# print("******************")
 			print(f' { diccJugadores[1-self.mano] }: Son buenas')
-			# print("******************")
 			ganadorE = self.mano
 
 		self.puntos[ganadorE] += self.envido
@@ -187,7 +169,7 @@ class Juego:
 
 	def ganadorRonda(self):
 		"""
-		El jugador que haya jugado la carta mas fuerte es el ganador de la ronda.
+		El jugador que haya jugado la carta más fuerte es el ganador de la ronda.
 		Un jugador debe ganar dos Rondas para ganar la Mano.
 		En caso de que haya 1 o 2 empates, el ganador de la siguiente ronda gana la Mano.
 		En caso de que hayan 3 empates el jugador que haya tirado la primera carta gana la Mano.
