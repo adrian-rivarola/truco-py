@@ -31,3 +31,6 @@ class Carta:
 	
 	def __repr__(self):
 		return f"{self.num} de {self.palo}"
+
+	def __len__(self):
+		return len(self.__repr__())
