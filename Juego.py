@@ -19,11 +19,11 @@ class Juego:
 		""" Imprime el resultado parcial del juego. """
 		os.system('cls' if os.name=="nt" else "clear")
 		
-		print("------------------")
+		print("─"*26)
 		for i in range(2): 
 			print(f' { diccJugadores[i] }: { self.puntos[i] } puntos')
 		
-		print("------------------")
+		print("─"*26)
 
 	def repartir(self):
 		"""
@@ -59,13 +59,13 @@ class Juego:
 		if respuesta == 2:
 			self.ganadorMano = ident
 			print(f' { diccJugadores[1-ident] }: No quiero')
-			print("------------------")
+			print("─"*26)
 		
 		elif respuesta == 1:
 			self.truco += 1
 			self.palabraTruco = [1-ident] if self.truco < 3 else []
 			print(f' { diccJugadores[1-ident] }: Quiero')
-			print("------------------")
+			print("─"*26)
 		
 		elif respuesta == 3 and self.truco < 3:
 			self.truco += 1
@@ -83,7 +83,7 @@ class Juego:
 		
 		if respuesta < 2: 
 			print(f' {diccJugadores[1-ident] }: { diccEnvido[respuesta] }')
-			print('-----------------')
+			print("─"*26)
 
 		
 		if respuesta == 0:
@@ -93,7 +93,7 @@ class Juego:
 		elif respuesta == 1:
 			self.envidoAceptado(env)
 			self.ganadorEnvido()
-			print('-----------------')
+			print("─"*26)
 		
 		elif respuesta < 5:
 			self.envidoAceptado(env)
@@ -147,9 +147,9 @@ class Juego:
 	def jugarRonda(self):
 		""" Llama a la funcion jugar() de cada jugador, comprueba que se hayan jugado una carta o si hay una ganador. """
 		os.system('cls' if os.name=="nt" else "clear")
-		print('==================')
-		print(f'=    Ronda {self.ronda}     =')
-		print('==================\n')
+		print('='*26)
+		print(f'=        Ronda {self.ronda}         =')
+		print('='*26, '\n')
 		
 		self.jugadores[self.turno].jugar(self)
 		
@@ -203,14 +203,14 @@ class Juego:
 	def jugar(self):
 		os.system('cls' if os.name=="nt" else "clear")
 		
-		print("=================")
-		print("=     TRUCO     =")
-		print("=================")
-		#print("-----------------")
-		print("- Jugar hasta:  -")
-		print("- 1. 18 puntos  -")
-		print("- 2. 9  puntos  -")
-		print("-----------------")
+		print("──────────────────────────")
+		print("─      TRUCO - PY        ─")
+		print("──────────────────────────")
+		#print("-------------------------")
+		print("-   Jugar hasta:         -")
+		print("- 1. 18 puntos           -")
+		print("- 2. 9  puntos           -")
+		print("--------------------------")
 		while 1:
 			inp = input("> ")
 			if inp == "1":
