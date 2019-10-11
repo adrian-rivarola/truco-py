@@ -177,7 +177,6 @@ class Juego:
 		print("│                        │")
 		print(f'│        Ronda {self.ronda}         │')
 		print("│                        │")
-		# print("└────────────────────────┘")
 		
 		self.jugadores[self.turno].jugar(self)
 		
