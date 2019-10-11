@@ -16,6 +16,16 @@ diccTruco = {
 }
 
 diccJugadores = {
-	0 : '* J1',
-	1 : '* CPU'
+	0 : 'J1 ',
+	1 : 'CPU'
 }
+
+def imprimir(txt):
+	print("┌────────────────────────┐")
+	print("│                        │")
+	print(txt + ' '*(25-len(txt))+ '│')
+	print("│                        │")
+	print("└────────────────────────┘")
+
+def imprimir_borde(txt):
+	print(txt + ' '*(25-len(txt)) + '│')

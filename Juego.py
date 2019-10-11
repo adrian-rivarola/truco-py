@@ -1,4 +1,4 @@
-from Diccionarios import diccJugadores,diccEnvido,diccTruco
+from Diccionarios import diccJugadores,diccEnvido,diccTruco, imprimir, imprimir_borde
 from Jugador import Humano, Cpu
 from Carta import Carta
 import random
@@ -19,11 +19,14 @@ class Juego:
 		""" Imprime el resultado parcial del juego. """
 		os.system('cls' if os.name=="nt" else "clear")
 		
-		print("─"*26)
-		for i in range(2): 
-			print(f' { diccJugadores[i] }: { self.puntos[i] } puntos')
+		print("┌────────────────────────┐")
+		print("│     Puntuaciones       │")
+
+		for i in range(2):
+			print("├────────────────────────┤")
+			imprimir_borde(f'│ { diccJugadores[i] }: { self.puntos[i] } puntos')
 		
-		print("─"*26)
+		print("└────────────────────────┘")
 
 	def repartir(self):
 		"""
@@ -46,30 +49,42 @@ class Juego:
 		for i in range(3):
 			for jugador in self.jugadores:
 				jugador.addCarta(mazo.pop())
+				os.system("cls")
+				imprimir('│ Repartiendo'+'.'*(i+1))
+				time.sleep(.2)
+
 	
 	def pedirTruco(self, ident):
 		"""
 		Recibe por parámetro el identificador del jugador que pide Truco, y pide una respuesta(1,2 o 3) al otro jugador.
 		En caso de que la respuesta sea 3, esta función se llama a sí misma, cambiando el identificador.
 		"""
-		print(f' { diccJugadores[ident] }: { diccTruco[self.truco] }')
+		print("┌────────────────────────┐")
+		imprimir_borde(f'│ { diccJugadores[ident] }: { diccTruco[self.truco] }')
 
 		respuesta = self.jugadores[1-ident].responderTruco(self)
 		
 		if respuesta == 2:
 			self.ganadorMano = ident
-			print(f' { diccJugadores[1-ident] }: No quiero')
-			print("─"*26)
+			
+			print("├────────────────────────┤")
+			imprimir_borde(f'│ { diccJugadores[1-ident] }: No quiero')
+			print("└────────────────────────┘")
 		
 		elif respuesta == 1:
 			self.truco += 1
 			self.palabraTruco = [1-ident] if self.truco < 3 else []
-			print(f' { diccJugadores[1-ident] }: Quiero')
-			print("─"*26)
+			
+			print("├────────────────────────┤")
+			imprimir_borde(f'│ { diccJugadores[1-ident] }: Quiero')
+			print("└────────────────────────┘")
 		
 		elif respuesta == 3 and self.truco < 3:
 			self.truco += 1
 			self.palabraTruco = [ident] if self.truco < 3 else []
+
+			print("├────────────────────────┤")
+			
 			self.pedirTruco(1-ident)
 
 	def pedirEnvido(self, ident, env):
@@ -77,15 +92,18 @@ class Juego:
 		Recibe el identificador del jugador que pide el Envido, y el número de envido según el diccionario(0-4).
 		La respuesta puede ser: 0 para rechazar, 1 para aceptar, 2-4 para cantar otro Envido.
 		"""
-		print(f' { diccJugadores[ident] }: { diccEnvido[env] }')
+		
+		print("┌────────────────────────┐")
+		imprimir_borde(f'│ { diccJugadores[ident] }: { diccEnvido[env] }')
+		print("├────────────────────────┤")
 
 		respuesta = self.jugadores[1-ident].responderEnvido(env)
 		
-		if respuesta < 2: 
-			print(f' {diccJugadores[1-ident] }: { diccEnvido[respuesta] }')
-			print("─"*26)
+		if respuesta < 2:
+			if ident == 1: print("┌────────────────────────┐")
+			imprimir_borde(f'│ {diccJugadores[1-ident] }: { diccEnvido[respuesta] }')
+			print("└────────────────────────┘")
 
-		
 		if respuesta == 0:
 			self.envido += 1
 			self.puntos[ident] += self.envido
@@ -93,7 +111,6 @@ class Juego:
 		elif respuesta == 1:
 			self.envidoAceptado(env)
 			self.ganadorEnvido()
-			print("─"*26)
 		
 		elif respuesta < 5:
 			self.envidoAceptado(env)
@@ -101,6 +118,9 @@ class Juego:
 
 		elif respuesta == 5:
 			self.pedirFlor(1-ident)
+
+		# os.system("pause")
+		# os.system('cls' if os.name=="nt" else "clear")
 
 	def envidoAceptado(self,env):
 		"""
@@ -121,7 +141,9 @@ class Juego:
 		Si el oponente también cuenta con flor, el que tenga mayor tanto se lleva 3 puntos.
 		Funciones de Contra Flor y Contra Flor al resto aún no han sido implementadas.
 		"""
-		print(f' { diccJugadores[ident] }: Flor')
+		print("┌────────────────────────┐")
+		imprimir_borde(f'│ { diccJugadores[ident] }: Flor')
+		print("└────────────────────────┘")
 		
 		if self.jugadores[1-ident].flor:
 			self.envido = 3
@@ -132,31 +154,37 @@ class Juego:
 
 	def ganadorEnvido(self):
 		""" Determina cual jugador posee el tanto más alto, y le asigna los puntos correspondientes. """
-		print(f' { diccJugadores[self.mano] }: { self.jugadores[self.mano].tanto }')
+		print("┌────────────────────────┐")
+		imprimir_borde(f'│ { diccJugadores[self.mano] }: { self.jugadores[self.mano].tanto }')
+		print("├────────────────────────┤")
+		
 		
 		if self.jugadores[1-self.mano] > self.jugadores[self.mano]:
-			print(f' { diccJugadores[1-self.mano] }: { self.jugadores[1-self.mano].tanto } son mejores')
+			imprimir_borde(f'│ { diccJugadores[1-self.mano] }: { self.jugadores[1-self.mano].tanto } son mejores')
 			ganadorE = 1-self.mano
 		else:
-			print(f' { diccJugadores[1-self.mano] }: Son buenas')
+			imprimir_borde(f'│ { diccJugadores[1-self.mano] }: Son buenas')
 			ganadorE = self.mano
 
+		print("└────────────────────────┘")
 		self.puntos[ganadorE] += self.envido
-		time.sleep(2)
 
 	def jugarRonda(self):
 		""" Llama a la funcion jugar() de cada jugador, comprueba que se hayan jugado una carta o si hay una ganador. """
 		os.system('cls' if os.name=="nt" else "clear")
-		print('='*26)
-		print(f'=        Ronda {self.ronda}         =')
-		print('='*26, '\n')
+		
+		print("┌────────────────────────┐")
+		print("│                        │")
+		print(f'│        Ronda {self.ronda}         │')
+		print("│                        │")
+		# print("└────────────────────────┘")
 		
 		self.jugadores[self.turno].jugar(self)
 		
 		if self.ganadorMano not in [0,1]:
 			self.jugadores[1-self.turno].jugar(self)
 
-		if self.cartasJugadas[1] and self.cartasJugadas[0] and self.ganadorMano not in [0,1]:
+		if all(self.cartasJugadas) and self.ganadorMano not in [0,1]:
 			self.ganadorRonda()
 
 		self.ronda += 1
@@ -183,7 +211,6 @@ class Juego:
 			self.ganadores[self.ronda-1] = 1
 		
 		else:
-			print('Resultado: Empate')
 			self.turno = self.mano
 			self.ganadores[self.ronda-1] = 'Empate'
 
@@ -203,14 +230,17 @@ class Juego:
 	def jugar(self):
 		os.system('cls' if os.name=="nt" else "clear")
 		
-		print("──────────────────────────")
-		print("─      TRUCO - PY        ─")
-		print("──────────────────────────")
-		#print("-------------------------")
-		print("-   Jugar hasta:         -")
-		print("- 1. 18 puntos           -")
-		print("- 2. 9  puntos           -")
-		print("--------------------------")
+		print("┌──────────────────────────┐")
+		print("│                          │")
+		print("│       TRUCO - PY         │")
+		print("│                          │")
+		print("├──────────────────────────┤")
+		print("│   Jugar hasta:           │")
+		print("├──────────────────────────┤")
+		print("│ 1. 18 puntos             │")
+		print("├──────────────────────────┤")
+		print("│ 2. 9  puntos             │")
+		print("└──────────────────────────┘")
 		while 1:
 			inp = input("> ")
 			if inp == "1":
@@ -227,6 +257,7 @@ class Juego:
 				self.jugarRonda()
 
 			self.info()
-			time.sleep(3)
+			os.system("pause")
 
 juego = Juego()
+juego.info()

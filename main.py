@@ -1,4 +1,8 @@
 from Juego import juego
 
 if __name__ == '__main__':
-	juego.jugar()
+	try:
+		juego.jugar()
+	except KeyboardInterrupt: 
+		print("\n\nBye")
+		exit()
