@@ -8,7 +8,7 @@ import os
 class Juego:
 	"""
 	Esta clase se encarga de controlar toda la lógica y las funciones del Juego.
-	Por defecto, crea un jugador Humano y uno controlado por la CPU.
+	Crea un jugador Humano y uno controlado por la CPU.
 	"""
 	def __init__(self):
 		self.jugadores = [Humano(0), Cpu(1)]
@@ -56,8 +56,7 @@ class Juego:
 	
 	def pedirTruco(self, ident):
 		"""
-		Recibe por parámetro el identificador del jugador que pide Truco, y pide una respuesta(1,2 o 3) al otro jugador.
-		En caso de que la respuesta sea 3, esta función se llama a sí misma, cambiando el identificador.
+		Recibe por parámetro el identificador del jugador que pide Truco, y pide una respuesta (1,2 o 3) al otro jugador.
 		"""
 		print("┌────────────────────────┐")
 		imprimir_borde(f'│ { diccJugadores[ident] }: { diccTruco[self.truco] }')
@@ -119,9 +118,6 @@ class Juego:
 		elif respuesta == 5:
 			self.pedirFlor(1-ident)
 
-		# os.system("pause")
-		# os.system('cls' if os.name=="nt" else "clear")
-
 	def envidoAceptado(self,env):
 		"""
 		Calcula cuántos puntos se deben asignar al ganador del Envido.
@@ -138,7 +134,7 @@ class Juego:
 	def pedirFlor(self, ident):
 		"""
 		Recibe el identificador del jugador con Flor. 
-		Si el oponente también cuenta con flor, el que tenga mayor tanto se lleva 3 puntos.
+		Si el oponente también tiene flor, el que tenga mayor tanto se lleva 3 puntos.
 		Funciones de Contra Flor y Contra Flor al resto aún no han sido implementadas.
 		"""
 		print("┌────────────────────────┐")
@@ -170,8 +166,8 @@ class Juego:
 		self.puntos[ganadorE] += self.envido
 
 	def jugarRonda(self):
-		""" Llama a la funcion jugar() de cada jugador, comprueba que se hayan jugado una carta o si hay una ganador. """
-		os.system('cls' if os.name=="nt" else "clear")
+		""" Llama al método jugar() de cada jugador, comprueba que se haya jugado una carta o si hay un ganador. """
+		clear()
 		
 		print("┌────────────────────────┐")
 		print("│                        │")
@@ -227,7 +223,7 @@ class Juego:
 				self.ganadorMano = self.turno
 
 	def jugar(self):
-		os.system('cls' if os.name=="nt" else "clear")
+		clear()
 		
 		print("┌──────────────────────────┐")
 		print("│                          │")
@@ -240,6 +236,7 @@ class Juego:
 		print("├──────────────────────────┤")
 		print("│ 2. 9  puntos             │")
 		print("└──────────────────────────┘")
+
 		while 1:
 			inp = input("> ")
 			if inp == "1":
@@ -256,7 +253,13 @@ class Juego:
 				self.jugarRonda()
 
 			self.info()
-			os.system("pause")
+			pausa()
 
 juego = Juego()
-juego.info()
+
+if os.name == "nt":
+	pausa = lambda : os.system("pause")
+	clear = lambda : os.system("cls")
+else:
+	pausa = lambda : input("Presione Enter para continuar . . .")
+	clear = lambda : os.system("cls")

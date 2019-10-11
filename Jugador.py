@@ -21,7 +21,7 @@ class Jugador:
 		self.calcularTanto()
 	
 	def calcularTanto(self):
-		"""Calcula el tanto si hay flor o dos cartas del mismo palo, de lo contrario retorna la carta mas alta."""
+		"""Calcula el tanto si hay flor o dos cartas del mismo palo, de lo contrario retorna la carta más alta."""
 		if self.flor:
 			self.tanto = self.cartas[0] + self.cartas[1] + self.cartas[2].valorE + 20
 		else:
@@ -66,7 +66,6 @@ class Humano(Jugador):
 		
 		imprimir_borde(f'│ Tu tanto es : { self.tanto }')
 		
-		
 		print("├────────────────────────┤")
 		print('│ 1. No quiero           │')
 		print('│ 2. Quiero              │')
@@ -109,7 +108,7 @@ class Humano(Jugador):
 	def jugar(self, juego):
 		"""
 		Muestra en pantalla todas las opciones que el usuario puede jugar, y las almacena en un diccionario.
-		El usuario ingresa el numero de la opcion a jugar, y el metodo de esta opcion es ejecutado
+		El usuario ingresa el número de la opcion a jugar, y el método de esta opción es ejecutado
 		"""
 		self.opciones = dict()
 
@@ -178,9 +177,9 @@ class Cpu(Jugador):
 	
 	def responderTruco(self, juego):
 		"""
-		Calcula la 'fuerza' de las cartas restantes del jugador, o bien de la ultima carta jugada.
+		Calcula la 'fuerza' de las cartas restantes del jugador, o bien de la última carta jugada.
 		La fuerza es el promedio de los valores de las cartas del jugador.
-		Retorna 1 4ra aceptar, 2 para rechazar y 3 para pedir Retruco o Vale Cuatro.
+		Retorna 1 para aceptar, 2 para rechazar y 3 para pedir Retruco o Vale Cuatro.
 		"""
 		if len(self.cartas) > 0:
 			fuerza = 0
@@ -201,7 +200,7 @@ class Cpu(Jugador):
 			return 1
 
 	def responderEnvido(self, env):
-		""" Retorna: 1, para aceptar, 0 para rechazar, o bien una opcion de Envido(segun el diccionario) """
+		""" Retorna: 1, para aceptar, 0 para rechazar, o bien una opción de Envido (según el diccionario) """
 		
 		if self.flor: return 5
 		if env < 3:
@@ -215,13 +214,13 @@ class Cpu(Jugador):
 			return 1 if self.tanto > 30 else 0
 
 	def pedirEnvido(self, juego):
-		""" Retorna el numero de envido a pedir(segun el diccionario). False en caso de que no se pida nada."""
+		""" Retorna el número de envido a pedir(según el diccionario). False en caso de que no se pida nada."""
 		if self.tanto > 31: juego.pedirEnvido(self.ident, 4)
 		elif self.tanto > 29: juego.pedirEnvido(self.ident, 3)
 		elif self.tanto > 21: juego.pedirEnvido(self.ident, 2)
 
 	def jugar(self, juego):
-		"""	Decide si pedir Envido/Truco o no, y elije cual carta jugar. """
+		"""	Decide si pedir Envido/Truco o no, y elige cual carta jugar. """
 		
 		if juego.ronda == 1:
 			if self.flor: 
