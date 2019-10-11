@@ -50,7 +50,7 @@ class Humano(Jugador):
 			imprimir_borde(f'│ 3. { diccTruco[juego.truco+1] }')
 			print("└────────────────────────┘")
 			max_truco = 3
-		except IndexError: max_truco = 2
+		except KeyError: max_truco = 2
 		
 		while 1:
 			try: inp = int(input('> '))
@@ -182,9 +182,7 @@ class Cpu(Jugador):
 		Retorna 1 para aceptar, 2 para rechazar y 3 para pedir Retruco o Vale Cuatro.
 		"""
 		if len(self.cartas) > 0:
-			fuerza = 0
-			for cart in self.cartas:
-				fuerza += (cart.valor//len(self.cartas))
+			fuerza = sum([carta.valor for carta in self.cartas]) / len(self.cartas)
 		
 		elif juego.cartasJugadas[self.ident]:
 				fuerza = juego.cartasJugadas[self.ident].valor
@@ -239,7 +237,7 @@ class Cpu(Jugador):
 		# Si el oponente ya jugó una carta, la cpu intentará jugar una más fuerte.
 		elif juego.cartasJugadas[1-self.ident]:
 
-			for i in range(len(self.cartas)-1):
+			for i in range(len(self.cartas)):
 				if  self.cartas[i] > juego.cartasJugadas[1-self.ident]:
 					
 					if self.ident in juego.ganadores and self.ident in juego.palabraTruco:
@@ -247,10 +245,14 @@ class Cpu(Jugador):
 					
 					juego.cartasJugadas[self.ident] = self.cartas.pop(i)
 					break
-		
-		if not juego.cartasJugadas[self.ident]:
-			juego.cartasJugadas[self.ident] = self.cartas.pop(0)
 
+		else:
+			if juego.ronda > 1 and self.ident in juego.ganadores:
+				fuerza = sum([carta.valor for carta in self.cartas]) / len(self.cartas)
+				if fuerza > 20:
+					juego.pedirTruco(self.ident)
+			juego.cartasJugadas[self.ident] = self.cartas.pop(0)
+		
 		if not juego.ganadorMano:
 			imprimir(f'│ CPU: { juego.cartasJugadas[self.ident] }')
 		
