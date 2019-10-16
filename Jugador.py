@@ -40,6 +40,16 @@ class Jugador:
 					if cart.valorE > self.tanto:
 						self.tanto = cart.valorE
 
+	def calcularFuerza(self, ult_carta):
+		"""
+		Calcula la 'fuerza' de las cartas restantes del jugador, o bien de la última carta jugada.
+		La fuerza es el promedio de los valores de las cartas del jugador.
+		"""
+		if ult_carta:
+			return ult_carta.valor
+		
+		return sum([carta.valor for carta in self.cartas]) / len(self.cartas)
+
 class Humano(Jugador):
 
 	def responderTruco(self, juego):
@@ -48,9 +58,9 @@ class Humano(Jugador):
 		print('│ 2. No quiero           │')
 		try:
 			imprimir_borde(f'│ 3. { diccTruco[juego.truco+1] }')
-			print("└────────────────────────┘")
 			max_truco = 3
 		except KeyError: max_truco = 2
+		print("└────────────────────────┘")
 		
 		while 1:
 			try: inp = int(input('> '))
@@ -151,7 +161,7 @@ class Humano(Jugador):
 
 			except ValueError: continue
 			
-			if 0 < inp > i: continue
+			if 0 >= inp or inp > i: continue
 			
 			if self.opciones[inp] == 'Truco' and self.ident in juego.palabraTruco: 
 				juego.pedirTruco(self.ident)
@@ -177,15 +187,9 @@ class Cpu(Jugador):
 	
 	def responderTruco(self, juego):
 		"""
-		Calcula la 'fuerza' de las cartas restantes del jugador, o bien de la última carta jugada.
-		La fuerza es el promedio de los valores de las cartas del jugador.
 		Retorna 1 para aceptar, 2 para rechazar y 3 para pedir Retruco o Vale Cuatro.
 		"""
-		if len(self.cartas) > 0:
-			fuerza = sum([carta.valor for carta in self.cartas]) / len(self.cartas)
-		
-		elif juego.cartasJugadas[self.ident]:
-				fuerza = juego.cartasJugadas[self.ident].valor
+		fuerza = self.calcularFuerza(juego.cartasJugadas[self.ident])
 		
 		if fuerza < 12:
 			juego.ganadorMano = 1-self.ident
@@ -227,30 +231,32 @@ class Cpu(Jugador):
 			elif juego.envido == 0 and self.tanto > 20: 
 				self.pedirEnvido(juego)
 
-		# Si hay una ronda del juego empatada, la cpu jugará su carta más fuerte.
-		if 'Empate' in juego.ganadores:
-			if juego.cartasJugadas[1-self.ident] and self.cartas[-1] > juego.cartasJugadas[1-self.ident]:
-				juego.pedirTruco(self.ident)
-
-			juego.cartasJugadas[self.ident] = self.cartas.pop()
-
 		# Si el oponente ya jugó una carta, la cpu intentará jugar una más fuerte.
-		elif juego.cartasJugadas[1-self.ident]:
+		if juego.cartasJugadas[1-self.ident]:
 
-			for i in range(len(self.cartas)):
-				if  self.cartas[i] > juego.cartasJugadas[1-self.ident]:
-					
-					if self.ident in juego.ganadores and self.ident in juego.palabraTruco:
-						juego.pedirTruco(self.ident)
-					
-					juego.cartasJugadas[self.ident] = self.cartas.pop(i)
-					break
+			# Si hay una ronda del juego empatada, la cpu jugará su carta más fuerte.
+			if 'Empate' in juego.ganadores:
+				if juego.cartasJugadas[1-self.ident] and self.cartas[-1] > juego.cartasJugadas[1-self.ident]:
+					juego.pedirTruco(self.ident)
+
+				juego.cartasJugadas[self.ident] = self.cartas.pop()
+
+			else:
+				for i in range(len(self.cartas)):
+					if  self.cartas[i] > juego.cartasJugadas[1-self.ident]:
+						
+						if self.ident in juego.ganadores and self.ident in juego.palabraTruco:
+							juego.pedirTruco(self.ident)
+						
+						juego.cartasJugadas[self.ident] = self.cartas.pop(i)
+						break
 
 		else:
 			if juego.ronda > 1 and self.ident in juego.ganadores:
-				fuerza = sum([carta.valor for carta in self.cartas]) / len(self.cartas)
-				if fuerza > 20:
+				if self.calcularFuerza(juego.cartasJugadas[self.ident]) > 13:
 					juego.pedirTruco(self.ident)
+
+		if not juego.cartasJugadas[self.ident]:
 			juego.cartasJugadas[self.ident] = self.cartas.pop(0)
 		
 		if not juego.ganadorMano:
