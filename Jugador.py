@@ -1,4 +1,4 @@
-from Diccionarios import diccJugadores,diccEnvido,diccTruco, imprimir, imprimir_borde
+from Diccionarios import diccJugadores,diccEnvido,diccTruco
 import random
 
 class Jugador:
@@ -46,20 +46,23 @@ class Jugador:
 		La fuerza es el promedio de los valores de las cartas del jugador.
 		"""
 		if ult_carta:
-			return ult_carta.valor
+			return (sum([carta.valor for carta in self.cartas])+ult_carta.valor) / (len(self.cartas) + 1)
 		
 		return sum([carta.valor for carta in self.cartas]) / len(self.cartas)
 
 class Humano(Jugador):
 
 	def responderTruco(self, juego):
-		print("├────────────────────────┤")
+		print("┌────────────────────────┐")
 		print('│ 1. Quiero              │')
 		print('│ 2. No quiero           │')
+		
 		try:
-			imprimir_borde(f'│ 3. { diccTruco[juego.truco+1] }')
+			print("|"+f" 3. { diccTruco[juego.truco+1] }".ljust(24)+"|")
 			max_truco = 3
-		except KeyError: max_truco = 2
+		except KeyError: 
+			max_truco = 2
+		
 		print("└────────────────────────┘")
 		
 		while 1:
@@ -74,28 +77,28 @@ class Humano(Jugador):
 		""" Retorna 0 para aceptar, 1 para rechazar, o bien una opcion de Envido(segun el diccionario) """
 		if env == 2: env = 1
 		
-		imprimir_borde(f'│ Tu tanto es : { self.tanto }')
-		
+		print("|"+f" Tu tanto es : { self.tanto }".center(24)+"|")
+			
 		print("├────────────────────────┤")
 		print('│ 1. No quiero           │')
 		print('│ 2. Quiero              │')
 		
 		for i in range(env+1,5):
-			imprimir_borde(f'│ { i+1 }. { diccEnvido[i] }')
-			
+			print("|"+f" { i+1 }. { diccEnvido[i] }".ljust(24)+"|")
 		
 		if self.flor:
-			imprimir_borde('│ 6. Flor')
+			print('│ 6. Flor                │')
 		
 		print("└────────────────────────┘")
 		
 		while 1:
 			try: inp = int(input('> '))
 			except ValueError: continue
+			
 			if inp in range(1,6): break
 
 		return inp-1
-		#Retorna el número ingresado por el usuario menos uno, ya que en pantalla las opciones se enumeran del 1 al 5-6.
+		#Retorna el número ingresado por el usuario menos uno, ya que el diccionario empieza en 0
 
 	def pedirEnvido(self, juego):
 		"""Retorna el número de envido a pedir(según el diccionario)."""
@@ -103,7 +106,7 @@ class Humano(Jugador):
 		print("┌────────────────────────┐")
 		
 		for i in range(2,5):
-			imprimir_borde(f'│ { i-1 }. { diccEnvido[i] }')
+			print("|"+f" { i-1 }. { diccEnvido[i] }".ljust(24)+"|")
 
 		print("└────────────────────────┘")
 
@@ -123,39 +126,39 @@ class Humano(Jugador):
 		self.opciones = dict()
 
 		print("┌────────────────────────┐")
-		print("│     Tus cartas:        │")
+		print("│      Tus cartas:       │")
 		print("├────────────────────────┤")
 		
 		i = 1
 		for carta in self.cartas:
-			imprimir_borde(f'│ { i }. { carta }')
+			print("|"+f" { i }. { carta }".ljust(24)+"|")
 			i += 1
 
 		print("├────────────────────────┤")
 
 		if self.ident in juego.palabraTruco:
-			imprimir_borde(f'│ { i }. { diccTruco[juego.truco] }')
+			print("|"+f" { i }. { diccTruco[juego.truco] }".ljust(24)+"|")
 			self.opciones[i] = 'Truco'
 			i += 1
 
 		if juego.ronda == 1:
 			
 			if self.flor:
-				imprimir_borde(f'│ { i }. Flor')
+				print("|"+f" { i }. Flor".ljust(24)+"|")
 				self.opciones[i] = 'Flor'
 				i += 1
 			
 			elif juego.envido == 0:
-				imprimir_borde(f'│ { i }. Envido')
+				print("|"+f" { i }. Envido".ljust(24)+"|")
 				self.opciones[i] = 'Envido'
 				i += 1
 
 		self.opciones[i] = 'Mazo'
-		imprimir_borde(f'│ { i }. Mazo')
+		print("|"+f" { i }. Mazo".ljust(24)+"|")
 		print("└────────────────────────┘")
 		
 		while 1:
-			try: 
+			try:
 				inp = int(input('> '))
 				if inp in range(1, len(self.cartas)+1): break
 
@@ -163,25 +166,29 @@ class Humano(Jugador):
 			
 			if 0 >= inp or inp > i: continue
 			
-			if self.opciones[inp] == 'Truco' and self.ident in juego.palabraTruco: 
+			if self.opciones[inp] == 'Truco' and self.ident in juego.palabraTruco:
 				juego.pedirTruco(self.ident)
 
-			elif self.opciones[inp] == 'Envido': 
+			elif self.opciones[inp] == 'Envido':
 				self.pedirEnvido(juego)
 				self.opciones[inp] = ''
 			
-			elif self.opciones[inp] == 'Flor': 
+			elif self.opciones[inp] == 'Flor':
 				juego.pedirFlor(self.ident)
 			
 			elif self.opciones[inp] == 'Mazo':
-				imprimir('│ J1: Me voy al Mazo.')
+				print("┌────────────────────────┐")
+				print("|"+f" {diccJugadores[self.ident]}: Me voy al mazo".center(24)+"|")
+				print("└────────────────────────┘")
 				juego.ganadorMano = 1-self.ident
 			
 			if juego.ganadorMano in [0,1]: return
 		
 		juego.cartasJugadas[self.ident] = self.cartas.pop(inp-1)
 
-		imprimir(f'│ J1: { juego.cartasJugadas[self.ident] }')
+		print("┌────────────────────────┐")
+		print("|"+f" {diccJugadores[self.ident]}: { juego.cartasJugadas[self.ident] }".center(24)+"|")
+		print("└────────────────────────┘")
 
 class Cpu(Jugador):
 	
@@ -189,7 +196,13 @@ class Cpu(Jugador):
 		"""
 		Retorna 1 para aceptar, 2 para rechazar y 3 para pedir Retruco o Vale Cuatro.
 		"""
-		fuerza = self.calcularFuerza(juego.cartasJugadas[self.ident])
+		if juego.envido == 0 and self.tanto > 20: 
+			juego.pedirEnvido(self.ident, self.pedirEnvido())
+
+		if len(self.cartas) == 3:
+			fuerza = self.cartas[1].valor
+		else: 
+			fuerza = self.calcularFuerza(juego.cartasJugadas[self.ident])
 		
 		if fuerza < 12:
 			juego.ganadorMano = 1-self.ident
@@ -215,11 +228,11 @@ class Cpu(Jugador):
 		else:
 			return 1 if self.tanto > 30 else 0
 
-	def pedirEnvido(self, juego):
-		""" Retorna el número de envido a pedir(según el diccionario). False en caso de que no se pida nada."""
-		if self.tanto > 31: juego.pedirEnvido(self.ident, 4)
-		elif self.tanto > 29: juego.pedirEnvido(self.ident, 3)
-		elif self.tanto > 21: juego.pedirEnvido(self.ident, 2)
+	def pedirEnvido(self):
+		"""Retorna el número de envido a pedir (según el diccionario)"""
+		if self.tanto > 31: return 4
+		elif self.tanto > 29: return 3
+		return 2
 
 	def jugar(self, juego):
 		"""	Decide si pedir Envido/Truco o no, y elige cual carta jugar. """
@@ -229,7 +242,7 @@ class Cpu(Jugador):
 				juego.pedirFlor(self.ident)
 			
 			elif juego.envido == 0 and self.tanto > 20: 
-				self.pedirEnvido(juego)
+				juego.pedirEnvido(self.ident, self.pedirEnvido())
 
 		# Si el oponente ya jugó una carta, la cpu intentará jugar una más fuerte.
 		if juego.cartasJugadas[1-self.ident]:
@@ -260,5 +273,6 @@ class Cpu(Jugador):
 			juego.cartasJugadas[self.ident] = self.cartas.pop(0)
 		
 		if not juego.ganadorMano:
-			imprimir(f'│ CPU: { juego.cartasJugadas[self.ident] }')
-		
+			print("┌────────────────────────┐")
+			print("|"+f" CPU: { juego.cartasJugadas[self.ident] }".center(24)+"|")
+			print("└────────────────────────┘")
