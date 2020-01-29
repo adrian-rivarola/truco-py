@@ -141,17 +141,12 @@ class Humano(Jugador):
 			self.opciones[i] = 'Truco'
 			i += 1
 
-		if juego.ronda == 1:
+		if juego.ronda == 1 and juego.envido == 0:
+			opc = 'Flor' if self.flor else 'Envido'
 			
-			if self.flor:
-				print("|"+f" { i }. Flor".ljust(24)+"|")
-				self.opciones[i] = 'Flor'
-				i += 1
-			
-			elif juego.envido == 0:
-				print("|"+f" { i }. Envido".ljust(24)+"|")
-				self.opciones[i] = 'Envido'
-				i += 1
+			print("|"+f" { i }. { opc }".ljust(24)+"|")
+			self.opciones[i] = opc
+			i += 1
 
 		self.opciones[i] = 'Mazo'
 		print("|"+f" { i }. Mazo".ljust(24)+"|")
@@ -175,6 +170,7 @@ class Humano(Jugador):
 			
 			elif self.opciones[inp] == 'Flor':
 				juego.pedirFlor(self.ident)
+				self.opciones[inp] = ''
 			
 			elif self.opciones[inp] == 'Mazo':
 				print("┌────────────────────────┐")

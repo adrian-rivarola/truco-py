@@ -144,12 +144,15 @@ class Juego:
 		print("|"+f"{ diccJugadores[ident] }: Flor".center(24)+"|")
 		print("└────────────────────────┘")
 		
+		self.envido = 3
+		
 		if self.jugadores[1-ident].flor:
-			self.envido = 3
+			print("┌────────────────────────┐")
+			print("|"+f"{ diccJugadores[1-ident] }: Quiero!".center(24)+"|")
+			print("└────────────────────────┘")
 			self.ganadorEnvido()
 		else:
-			self.puntos[ident] += 3
-			self.envido = 3
+			self.puntos[ident] += self.envido
 
 	def ganadorEnvido(self):
 		""" Determina cual jugador posee el tanto más alto, y le asigna los puntos correspondientes. """
