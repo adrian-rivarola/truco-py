@@ -232,43 +232,44 @@ class Cpu(Jugador):
 
 	def jugar(self, juego):
 		"""	Decide si pedir Envido/Truco o no, y elige cual carta jugar. """
-		
-		if juego.ronda == 1:
-			if self.flor: 
+
+		if juego.ronda == 1 and juego.envido == 0:
+			if self.flor:
 				juego.pedirFlor(self.ident)
 			
-			elif juego.envido == 0 and self.tanto > 20: 
+			elif self.tanto > 20:
 				juego.pedirEnvido(self.ident, self.pedirEnvido())
+ 
+		rondaFinal = juego.ronda == 3 or 'Empate' in juego.ganadores
+		puedoPedirTruco = self.ident in juego.palabraTruco
+		cartaOponente = juego.cartasJugadas[1-self.ident]
+		miCarta = None
 
-		# Si el oponente ya jugó una carta, la cpu intentará jugar una más fuerte.
-		if juego.cartasJugadas[1-self.ident]:
+		if rondaFinal:
+			""" Si hubo un empate, jugar la carta más fuerte """
+			miCarta = self.cartas[-1]
 
-			# Si hay una ronda del juego empatada, la cpu jugará su carta más fuerte.
-			if 'Empate' in juego.ganadores:
-				if juego.cartasJugadas[1-self.ident] and self.cartas[-1] > juego.cartasJugadas[1-self.ident]:
-					juego.pedirTruco(self.ident)
+		elif cartaOponente:
+			""" Oponente ya jugó una carta, intentar jugar una más fuerte """
+			for carta in self.cartas:
+				if carta > cartaOponente: 
+					miCarta = carta
+					break
 
-				juego.cartasJugadas[self.ident] = self.cartas.pop()
+		if not miCarta:
+			""" Si el oponente aún no jugó y no hubo un empate, jugar carta más débil """
+			miCarta = self.cartas[0]
 
-			else:
-				for i in range(len(self.cartas)):
-					if  self.cartas[i] > juego.cartasJugadas[1-self.ident]:
-						
-						if self.ident in juego.ganadores and self.ident in juego.palabraTruco:
-							juego.pedirTruco(self.ident)
-						
-						juego.cartasJugadas[self.ident] = self.cartas.pop(i)
-						break
+		puedoGanar = (cartaOponente and miCarta > cartaOponente) or (not cartaOponente and self.calcularFuerza(miCarta) > 13)
 
-		else:
-			if juego.ronda > 1 and self.ident in juego.ganadores:
-				if self.calcularFuerza(juego.cartasJugadas[self.ident]) > 13:
-					juego.pedirTruco(self.ident)
-
-		if not juego.cartasJugadas[self.ident]:
-			juego.cartasJugadas[self.ident] = self.cartas.pop(0)
+		if puedoPedirTruco and rondaFinal and puedoGanar:
+			""" Pedir truco si es seguro de que se ganará la ronda o hay esperanza """
+			juego.pedirTruco(self.ident)
 		
 		if not juego.ganadorMano:
+			juego.cartasJugadas[self.ident] = miCarta
+			self.cartas.remove(miCarta)
+
 			print("┌────────────────────────┐")
-			print("|"+f" CPU: { juego.cartasJugadas[self.ident] }".center(24)+"|")
+			print("|"+f" CPU: { miCarta }".center(24)+"|")
 			print("└────────────────────────┘")
